@@ -13,13 +13,13 @@ export default function LotteryEntrance() {
 
   // console.log(parseInt(chainIdHex)); // parse to get the actual number from the hex format
 
-  // const { runContractFunction: enterRaffle } = useWeb3Contract({
-  //   abi:abi,
-  //   contractAddress: raffleAddress,// need to specify networkId
-  //   functionName:"enterRaffle",
-  //   params:{},
-  //   msgValue:
-  // });
+  const { runContractFunction: enterRaffle } = useWeb3Contract({
+    abi: abi,
+    contractAddress: raffleAddress, // need to specify networkId
+    functionName: "enterRaffle",
+    params: {},
+    msgValue: entranceFee,
+  });
 
   const { runContractFunction: getEntranceFee } = useWeb3Contract({
     abi: abi,
@@ -41,10 +41,21 @@ export default function LotteryEntrance() {
 
   return (
     <div>
-      Hi From Lottery Entrance!{" "}
-      <div>
-        Entrance Fee: {ethers.utils.formatUnits(entranceFee, "ether")} ETH
-      </div>
+      Hi From Lottery Entrance!
+      {raffleAddress ? (
+        <div>
+          <button
+            onClick={async function () {
+              await enterRaffle();
+            }}
+          >
+            Enter Raffle
+          </button>
+          Entrance Fee: {ethers.utils.formatUnits(entranceFee, "ether")} ETH
+        </div>
+      ) : (
+        <div>No Raffle Address Detected</div>
+      )}
     </div>
   );
 }
