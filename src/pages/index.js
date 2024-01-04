@@ -9,7 +9,6 @@ export default function Home() {
         <title>Smart Contract Lottery</title>
         <meta name="description" content="Our Smart Contract Lottery" />{" "}
         {/*content will be read by webscrapers*/}
-        <link rel="icon" href="/favicon.ico" />
       </Head>
       <ManualHeader />
       {/*header / connect button / nav bar*/}
