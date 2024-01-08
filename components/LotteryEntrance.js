@@ -11,7 +11,8 @@ export default function LotteryEntrance() {
   const raffleAddress =
     chainId in contractAddresses ? contractAddresses[chainId][0] : null;
   const [entranceFee, setEntranceFee] = useState("0");
-
+  const [numPlayers, setNumPlayers] = useState("0");
+  const [recentWinner, setRecentWinner] = useState("0");
   const dispatch = useNotification();
 
   // console.log(parseInt(chainIdHex)); // parse to get the actual number from the hex format
@@ -31,20 +32,40 @@ export default function LotteryEntrance() {
     params: {},
   });
 
+  const { runContractFunction: getNumberOfPlayers } = useWeb3Contract({
+    abi: abi,
+    contractAddress: raffleAddress, // need to specify networkId
+    functionName: "getNumberOfPlayers",
+    params: {},
+  });
+
+  const { runContractFunction: getRecentWinner } = useWeb3Contract({
+    abi: abi,
+    contractAddress: raffleAddress, // need to specify networkId
+    functionName: "getRecentWinner",
+    params: {},
+  });
+
+  async function updateUI() {
+    const entranceFeeFromCall = (await getEntranceFee()).toString();
+    const numPlayersFromCall = (await getNumberOfPlayers()).toString();
+    const recentWinnerFromCall = await getRecentWinner();
+    setEntranceFee(entranceFeeFromCall);
+    setNumPlayers(numPlayersFromCall);
+    setRecentWinner(recentWinnerFromCall);
+  }
+
   useEffect(() => {
     if (isWeb3Enabled) {
-      // try to read the raffle entrance fee
-      async function updateUI() {
-        const entranceFeeFromCall = (await getEntranceFee()).toString();
-        setEntranceFee(entranceFeeFromCall);
-      }
       updateUI();
     }
+    // try to read the raffle entrance fee
   }, [isWeb3Enabled]);
 
   const handleSuccess = async function (tx) {
     await tx.wait(1);
     handleNewNotification(tx);
+    updateUI();
   };
 
   const handleNewNotification = function () {
@@ -59,7 +80,7 @@ export default function LotteryEntrance() {
 
   return (
     <div>
-      Hi From Lottery Entrance!
+      <p>Hi From Lottery Entrance!</p>
       {raffleAddress ? (
         <div>
           <button
@@ -72,7 +93,11 @@ export default function LotteryEntrance() {
           >
             Enter Raffle
           </button>
-          Entrance Fee: {ethers.utils.formatUnits(entranceFee, "ether")} ETH
+          <p>
+            Entrance Fee: {ethers.utils.formatUnits(entranceFee, "ether")} ETH
+          </p>
+          <p>Number of Players: {numPlayers}</p>
+          <p>Recent Winner: {recentWinner}</p>
         </div>
       ) : (
         <div>No Raffle Address Detected</div>
