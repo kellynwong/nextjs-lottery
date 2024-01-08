@@ -17,7 +17,11 @@ export default function LotteryEntrance() {
 
   // console.log(parseInt(chainIdHex)); // parse to get the actual number from the hex format
 
-  const { runContractFunction: enterRaffle } = useWeb3Contract({
+  const {
+    runContractFunction: enterRaffle,
+    isLoading,
+    isFetching,
+  } = useWeb3Contract({
     abi: abi,
     contractAddress: raffleAddress, // need to specify networkId
     functionName: "enterRaffle",
@@ -79,25 +83,32 @@ export default function LotteryEntrance() {
   };
 
   return (
-    <div>
+    <div className="p-5">
       <p>Hi From Lottery Entrance!</p>
       {raffleAddress ? (
         <div>
           <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-auto"
             onClick={async function () {
               await enterRaffle({
-                onSuccess: handleSuccess,
+                onSuccess: handleSuccess, // isn't checking that the txn has a block confirmation, just checking that txn has sent by metamask
                 onError: (error) => console.log(error),
               });
             }}
+            disabled={isLoading || isFetching}
           >
-            Enter Raffle
+            {isLoading || isFetching ? (
+              <div className="animate-spin spinner-border h-8 w-8 border-b-2 rounded-full"></div>
+            ) : (
+              <div>Enter Raffle</div>
+            )}
           </button>
-          <p>
+
+          <div>
             Entrance Fee: {ethers.utils.formatUnits(entranceFee, "ether")} ETH
-          </p>
-          <p>Number of Players: {numPlayers}</p>
-          <p>Recent Winner: {recentWinner}</p>
+          </div>
+          <div>Number of Players: {numPlayers}</div>
+          <div>Recent Winner: {recentWinner}</div>
         </div>
       ) : (
         <div>No Raffle Address Detected</div>
