@@ -1,4 +1,4 @@
-import Image from "next/image";
+//import Image from "next/image";
 import Head from "next/head";
 // import ManualHeader from "/components/ManualHeader";
 import LotteryEntrance from "/components/LotteryEntrance";
